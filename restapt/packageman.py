@@ -19,10 +19,10 @@ class Dpkg(PackageManager):
         """Checks if a package is installed"""
         cmd = ["/usr/bin/dpkg-query", "-W", "-f", "${status}", pkg_name]
         proc = subprocess.run(cmd, capture_output=True, check=False)
-        return proc.stdout
+        return proc.stdout.decode('utf-8')
 
     def list_pkgs(self):
         """Lists installed packages"""
-        cmd = ["/usr/bin/dpkg-query", "-W", "-f", "${Package}\n", "*"]
+        cmd = ["/usr/bin/dpkg-query", "-W", "-f", "${Package}\t${status}\n", "*"]
         proc = subprocess.run(cmd, capture_output=True, check=True)
-        return proc.stdout
+        return proc.stdout.decode('utf-8')
