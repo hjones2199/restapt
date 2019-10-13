@@ -33,6 +33,24 @@ class PkgStatus(Resource):
         }
         return jsonify(result)
 
+class PkgSearch(Resource):
+    """JSONifies a list of packages matching a pattern"""
+    pkg_manager = packageman.Dpkg()
+
+    def get(self, pattern):
+        """Returns list of packages as a JSON object"""
+        pkgs = self.pkg_manager.search_pkgs(pattern).split('\n')
+        parsed_pkgs = []
+        for pkg in pkgs:
+            if pkg == '':
+                continue
+            tmp_pkg = pkg.split('\t')
+            pkg_sing_dict = {tmp_pkg[0]: tmp_pkg[1]}
+            parsed_pkgs.append(pkg_sing_dict)
+        if parsed_pkgs == []:
+            return jsonify({'status': 'not found'})
+        else:
+            return jsonify(parsed_pkgs)
 
 class PkgList(Resource):
     """JSONifies a list of all packages on the system"""
@@ -48,11 +66,15 @@ class PkgList(Resource):
             tmp_pkg = pkg.split('\t')
             pkg_sing_dict = {tmp_pkg[0]: tmp_pkg[1]}
             parsed_pkgs.append(pkg_sing_dict)
-        return jsonify(parsed_pkgs)
+        if parsed_pkgs == []:
+            return jsonify({'status': 'not found'})
+        else:
+            return jsonify(parsed_pkgs)
 
 
 API.add_resource(PkgStatus, '/pkgstatus/<pkg_name>')
 API.add_resource(PkgList, '/pkglist')
+API.add_resource(PkgSearch, '/pkgsearch/<pattern>')
 
 if __name__ == '__main__':
     APP.run(debug=True)

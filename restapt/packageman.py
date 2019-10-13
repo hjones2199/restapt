@@ -21,8 +21,13 @@ class Dpkg(PackageManager):
         proc = subprocess.run(cmd, capture_output=True, check=False)
         return proc.stdout.decode('utf-8')
 
+    def search_pkgs(self, pattern):
+        """Searches for packages matching a pattern"""
+        cmd = ["/usr/bin/dpkg-query", "-W", "-f", "${Package}\t${status}\n", pattern]
+        proc = subprocess.run(cmd, capture_output=True, check=False)
+        return proc.stdout.decode('utf-8')
+
+
     def list_pkgs(self):
         """Lists installed packages"""
-        cmd = ["/usr/bin/dpkg-query", "-W", "-f", "${Package}\t${status}\n", "*"]
-        proc = subprocess.run(cmd, capture_output=True, check=True)
-        return proc.stdout.decode('utf-8')
+        return self.search_pkgs("*")
