@@ -17,7 +17,7 @@ def index():
 @APP.errorhandler(404)
 def no_function(error):
     """404 response for bad requests"""
-    return make_response(jsonify({'ERROR': 'No such function'}), 404)
+    return make_response(jsonify({'ERROR': str(error)}), 404)
 
 
 class PkgStatus(Resource):
@@ -32,6 +32,7 @@ class PkgStatus(Resource):
             'not found' if stat == '' else stat
         }
         return jsonify(result)
+
 
 class PkgSearch(Resource):
     """JSONifies a list of packages matching a pattern"""
@@ -51,6 +52,7 @@ class PkgSearch(Resource):
             return jsonify({'status': 'not found'})
         else:
             return jsonify(parsed_pkgs)
+
 
 class PkgList(Resource):
     """JSONifies a list of all packages on the system"""
